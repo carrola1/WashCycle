@@ -86,7 +86,7 @@ void setup()
 {
   Blynk.begin(auth, ssid, pass);
   pinMode(sensePin, INPUT);
-  // Setup a function to be called every second
+  // Setup a function to be called every 50 ms
   timer.setInterval(50L, getSample);
   
 }
@@ -100,12 +100,9 @@ void getSample()
       toCnt = 0;
       if (vibeCnt == 1) {
         washDet = 1;
-        vibeCnt = vibeCnt + 1;
         led0.on();
-      } else {
-        vibeCnt = vibeCnt + 1;
-        delay(5000);
       }
+      vibeCnt = vibeCnt + 1;
     } else {
       if (toCnt == vibeToThresh) {     // 10 minute timeout
         if (washDet == 1) {
@@ -122,17 +119,17 @@ void getSample()
     }
     Blynk.virtualWrite(V3,vibeCnt);
   } else {
-    if (ackButton == 1) {
-      ackComplete = 1;
-      washComplete = 0;
-      led1.off();
-      notifyTo = notifyToThresh;
-    }
     if (notifyTo == notifyToThresh) {
       Blynk.notify("Wash Cycle Complete!");
       notifyTo = 0;
     } else {
       notifyTo = notifyTo + 1;
+    }
+    if (ackButton == 1) {
+      ackComplete = 1;
+      washComplete = 0;
+      led1.off();
+      notifyTo = notifyToThresh;
     }
   }
 }
